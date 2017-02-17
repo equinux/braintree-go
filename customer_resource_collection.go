@@ -15,6 +15,14 @@ type CustomerResourceCollection struct {
 // Each iterates over all items in the collection, calling `f` for each
 // customer.
 func (r *CustomerResourceCollection) Each(f func(*Customer)) error {
+	return r.Iterate(func(c *Customer) bool {
+		f(c)
+		return true
+	})
+}
+
+// Iterate over customers as long as `f` returns true.
+func (r *CustomerResourceCollection) Iterate(f func(*Customer) bool) error {
 	pageCount := int64(math.Ceil(float64(len(r.ids)) / float64(r.pageSize)))
 	var page int64
 	for page = 0; page < pageCount; page++ {
@@ -26,7 +34,9 @@ func (r *CustomerResourceCollection) Each(f func(*Customer)) error {
 			return err
 		}
 		for _, c := range customers {
-			f(c)
+			if !f(c) {
+				return nil
+			}
 		}
 	}
 	return nil
