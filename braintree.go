@@ -39,6 +39,16 @@ func New(env Environment, merchId, pubKey, privKey string) *Braintree {
 	}
 }
 
+func NewWithHttpClient(env Environment, merchantId, publicKey, privateKey string, client *http.Client) *Braintree {
+	return &Braintree{
+		Environment: env,
+		MerchantId:  merchantId,
+		PublicKey:   publicKey,
+		PrivateKey:  privateKey,
+		HttpClient:  client,
+	}
+}
+
 type Braintree struct {
 	Environment Environment
 	MerchantId  string
@@ -163,4 +173,8 @@ func (g *Braintree) Discount() *DiscountGateway {
 
 func (g *Braintree) WebhookNotification() *WebhookNotificationGateway {
 	return &WebhookNotificationGateway{g}
+}
+
+func (g *Braintree) Settlement() *SettlementGateway {
+	return &SettlementGateway{g}
 }
